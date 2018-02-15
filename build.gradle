@@ -33,6 +33,7 @@ allprojects {
 
         support_version = '26.1.0'
         constraint_layout_version = '1.0.2'
+        arch_version = '1.1.0'
 
         retrofit_version = '2.3.0'
         ok_http_version = '3.8.1'

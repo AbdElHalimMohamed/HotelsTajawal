@@ -12,6 +12,6 @@ class ListAllHotelsUseCase(repository: HotelRepository, threadExecutor: ThreadEx
     : HotelUseCase<List<Hotel>, HotelUseCase.Params.ListAllHotels>(repository, threadExecutor, uiExecutor) {
 
     // based on use case, data can be modified using RxJava operators before handed to Presenter
-    override fun buildUseCaseObservable(params: Params.ListAllHotels): Observable<List<Hotel>>
-            = repository.listHotels()
+    override fun buildUseCaseObservable(params: Params.ListAllHotels): Observable<List<Hotel>> =
+            repository.listHotels()
 }

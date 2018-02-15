@@ -12,7 +12,7 @@ import io.reactivex.schedulers.Schedulers
 abstract class UseCase<T, in Params>(private val threadExecutor: ThreadExecutor,
                                      private val uiExecutor: PostExecutionThread) {
 
-    private val disposables: CompositeDisposable = CompositeDisposable()
+    private var disposables: CompositeDisposable = CompositeDisposable()
     private lateinit var observable: Observable<T>
 
     abstract fun buildUseCaseObservable(params: Params): Observable<T>
@@ -25,6 +25,10 @@ abstract class UseCase<T, in Params>(private val threadExecutor: ThreadExecutor,
         val finalObservable = when (observer) {
             is RetryDisposableObserver -> observer.makeObservableRetryable(observable)
             else -> observable
+        }
+
+        if (disposables.isDisposed) {
+            disposables = CompositeDisposable()
         }
 
         disposables.add(finalObservable

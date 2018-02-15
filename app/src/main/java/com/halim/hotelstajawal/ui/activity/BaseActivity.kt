@@ -8,7 +8,7 @@ import dagger.android.AndroidInjection
 import javax.inject.Inject
 
 
-abstract class BaseActivity<P : Presenter<View>> : AppCompatActivity(), View {
+abstract class BaseActivity<P : Presenter<*>> : AppCompatActivity(), View {
 
     @Inject
     open lateinit var presenter: P
@@ -17,11 +17,17 @@ abstract class BaseActivity<P : Presenter<View>> : AppCompatActivity(), View {
     abstract fun onViewCreated(presenter: P)
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
+
+        AndroidInjection.inject(this)
 
         setContentView(getLayoutId())
 
         onViewCreated(presenter)
+    }
+
+    override fun onDestroy() {
+        presenter.dispose()
+        super.onDestroy()
     }
 }
