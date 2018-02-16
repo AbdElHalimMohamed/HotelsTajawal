@@ -2,29 +2,30 @@ package com.halim.hotelstajawal.domain.usecase
 
 import com.halim.hotelstajawal.domain.excutor.PostExecutionThread
 import com.halim.hotelstajawal.domain.excutor.ThreadExecutor
-import com.halim.hotelstajawal.domain.usecase.observers.RetryDisposableObserver
-import io.reactivex.Observable
+import com.halim.hotelstajawal.domain.usecase.observers.RetryDisposableSubscriber
+import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subscribers.DisposableSubscriber
+import io.reactivex.subscribers.ResourceSubscriber
 
 
 abstract class UseCase<T, in Params>(private val threadExecutor: ThreadExecutor,
                                      private val uiExecutor: PostExecutionThread) {
 
     private var disposables: CompositeDisposable = CompositeDisposable()
-    private lateinit var observable: Observable<T>
+    private lateinit var flowable: Flowable<T>
 
-    abstract fun buildUseCaseObservable(params: Params): Observable<T>
+    abstract fun buildUseCaseObservable(params: Params): Flowable<T>
 
-    fun execute(params: Params, observer: DisposableObserver<T>) {
-        if (this::observable.isInitialized.not()) {
-            observable = buildUseCaseObservable(params)
+    fun execute(params: Params, subscriber: DisposableSubscriber<T>) {
+        if (this::flowable.isInitialized.not()) {
+            flowable = buildUseCaseObservable(params)
         }
 
-        val finalObservable = when (observer) {
-            is RetryDisposableObserver -> observer.makeObservableRetryable(observable)
-            else -> observable
+        val finalObservable = when (subscriber) {
+            is RetryDisposableSubscriber -> subscriber.makeObservableRetryable(flowable)
+            else -> flowable
         }
 
         if (disposables.isDisposed) {
@@ -34,7 +35,7 @@ abstract class UseCase<T, in Params>(private val threadExecutor: ThreadExecutor,
         disposables.add(finalObservable
                 .subscribeOn(Schedulers.from(threadExecutor))
                 .observeOn(uiExecutor.scheduler)
-                .subscribeWith(observer))
+                .subscribeWith(subscriber))
     }
 
     fun dispose() {

@@ -3,22 +3,23 @@ package com.halim.hotelstajawal.domain.usecase.observers
 import com.halim.hotelstajawal.domain.exception.ExceptionHandler
 import com.halim.hotelstajawal.domain.value
 import com.halim.hotelstajawal.domain.view.View
-import io.reactivex.observers.DisposableObserver
+import io.reactivex.subscribers.DisposableSubscriber
 import java.lang.ref.WeakReference
 
 
-open class SimpleDisposableObserver<T>(val baseView: WeakReference<out View>) : DisposableObserver<T>() {
+open class SimpleDisposableSubscriber<T>(val baseView: WeakReference<out View>) :
+        DisposableSubscriber<T>() {
 
     override fun onStart() {
+        super.onStart()
         baseView.value?.showLoadingDataProgress()
     }
 
     override fun onComplete() {
-        baseView.value?.hideLoadingDataProgress()
     }
 
     override fun onNext(data: T) {
-
+        baseView.value?.hideLoadingDataProgress()
     }
 
     override fun onError(e: Throwable) {

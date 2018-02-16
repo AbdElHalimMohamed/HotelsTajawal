@@ -1,10 +1,10 @@
 package com.halim.hotelstajawal.data.dataset
 
 import com.halim.hotelstajawal.data.model.Hotel
-import io.reactivex.Observable
+import io.reactivex.Single
 
 // a common interface for all source of data (CloudDataSet, DatabaseDataSet, FileDataSet...etc)
 interface HotelDataSet {
 
-    fun listHotels(): Observable<List<Hotel>>
+    fun listHotels(): Single<List<Hotel>>
 }

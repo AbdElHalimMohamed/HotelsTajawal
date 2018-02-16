@@ -3,8 +3,7 @@ package com.halim.hotelstajawal.domain.presenter
 import com.halim.hotelstajawal.domain.entity.Hotel
 import com.halim.hotelstajawal.domain.usecase.hotel.HotelUseCase
 import com.halim.hotelstajawal.domain.usecase.hotel.ListAllHotelsUseCase
-import com.halim.hotelstajawal.domain.usecase.observers.RetryDisposableObserver
-import com.halim.hotelstajawal.domain.usecase.observers.SimpleDisposableObserver
+import com.halim.hotelstajawal.domain.usecase.observers.RetryDisposableSubscriber
 import com.halim.hotelstajawal.domain.value
 import com.halim.hotelstajawal.domain.view.HotelListView
 
@@ -15,7 +14,7 @@ class HotelListPresenter(private val listUseCase: ListAllHotelsUseCase,
     fun listAllHotels() {
 
         listUseCase.execute(HotelUseCase.Params.ListAllHotels(),
-                object : RetryDisposableObserver<List<Hotel>>(view) {
+                object : RetryDisposableSubscriber<List<Hotel>>(view) {
 
                     override fun onNext(data: List<Hotel>) {
                         super.onNext(data)

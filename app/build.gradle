@@ -41,6 +41,9 @@ dependencies {
     implementation "com.android.support.constraint:constraint-layout:$constraint_layout_version"
 
     implementation "android.arch.lifecycle:extensions:$arch_version"
+    implementation "android.arch.persistence.room:runtime:$arch_room_version"
+    implementation "android.arch.persistence.room:rxjava2:$arch_room_version"
+    kapt "android.arch.persistence.room:compiler:$arch_room_version"
 
     implementation "com.squareup.okhttp3:logging-interceptor:$ok_http_version"
     implementation "com.squareup.okhttp3:okhttp:$ok_http_version"
