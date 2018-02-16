@@ -7,6 +7,7 @@ import com.halim.hotelstajawal.di.scope.ActivityScope
 import com.halim.hotelstajawal.domain.excutor.PostExecutionThread
 import com.halim.hotelstajawal.domain.excutor.ThreadExecutor
 import com.halim.hotelstajawal.domain.presenter.HotelListPresenter
+import com.halim.hotelstajawal.domain.presenter.bus.Bus
 import com.halim.hotelstajawal.domain.repository.HotelRepository
 import com.halim.hotelstajawal.domain.usecase.hotel.ListAllHotelsUseCase
 import com.halim.hotelstajawal.domain.view.HotelListView
@@ -33,8 +34,9 @@ class HotelListModule {
 
     @Provides
     @ActivityScope
-    fun provideHotelListViewModel(listUseCase: Lazy<ListAllHotelsUseCase>, view: HotelListView): Lazy<HotelListViewModel> =
-            lazy { HotelListViewModel(HotelListPresenter(listUseCase.value, view)) }
+    fun provideHotelListViewModel(listUseCase: Lazy<ListAllHotelsUseCase>, threadExecutor: ThreadExecutor,
+                                  uiExecutor: PostExecutionThread, bus: Bus, view: HotelListView): Lazy<HotelListViewModel> =
+            lazy { HotelListViewModel(HotelListPresenter(listUseCase.value, threadExecutor, uiExecutor, bus, view)) }
 
     @Provides
     @ActivityScope

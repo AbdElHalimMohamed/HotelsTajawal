@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">HotelsTajawal</string>
+    <string name="retry">Retry</string>
+    <string name="unknown_error">Unknown error</string>
+    <string name="server_error">Server error</string>
+    <string name="network_error">Network error</string>
+    <string name="not_found_error">Resource not found</string>
+    <string name="empty_default">No data</string>
+    <string name="empty_hotel_list">There are no hotels</string>
+    <string name="hotel_list_title">Hotels list</string>
 </resources>

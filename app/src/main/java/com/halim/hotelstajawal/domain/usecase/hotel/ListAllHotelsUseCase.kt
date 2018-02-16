@@ -12,6 +12,7 @@ class ListAllHotelsUseCase(repository: HotelRepository, threadExecutor: ThreadEx
     : HotelUseCase<List<Hotel>, HotelUseCase.Params.ListAllHotels>(repository, threadExecutor, uiExecutor) {
 
     // based on use case, data can be modified using RxJava operators before handed to Presenter
+    // TODO add memory cache (RxJava operators)
     override fun buildUseCaseObservable(params: Params.ListAllHotels): Flowable<List<Hotel>> =
             repository.listHotels()
 }

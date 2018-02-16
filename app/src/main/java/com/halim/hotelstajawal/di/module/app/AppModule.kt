@@ -9,6 +9,8 @@ import com.halim.hotelstajawal.domain.excutor.PostExecutionThread
 import com.halim.hotelstajawal.domain.excutor.ThreadExecutor
 import com.halim.hotelstajawal.domain.excutor.ThreadPoolExecutor
 import com.halim.hotelstajawal.domain.excutor.UIExecutor
+import com.halim.hotelstajawal.domain.presenter.bus.Bus
+import com.halim.hotelstajawal.domain.presenter.bus.RXBus
 import dagger.Binds
 import dagger.Module
 import dagger.android.AndroidInjectionModule
@@ -36,5 +38,9 @@ class AppModule {
         @Binds
         @AppScope
         abstract fun bindUIExecutor(uiExecutor: UIExecutor): PostExecutionThread
+
+        @Binds
+        @AppScope
+        abstract fun bindBus(rxBus: RXBus): Bus
     }
 }

@@ -2,6 +2,8 @@ package com.halim.hotelstajawal.domain.usecase.observers
 
 import com.halim.hotelstajawal.domain.exception.DomainException
 import com.halim.hotelstajawal.domain.exception.ExceptionHandler
+import com.halim.hotelstajawal.domain.excutor.PostExecutionThread
+import com.halim.hotelstajawal.domain.excutor.ThreadExecutor
 import com.halim.hotelstajawal.domain.value
 import com.halim.hotelstajawal.domain.view.View
 import io.reactivex.BackpressureStrategy
@@ -12,7 +14,9 @@ import io.reactivex.schedulers.Schedulers
 import java.lang.ref.WeakReference
 
 
-open class RetryDisposableSubscriber<T>(baseView: WeakReference<out View>)
+open class RetryDisposableSubscriber<T>(private val threadExecutor: ThreadExecutor,
+                                        private val uiExecutor: PostExecutionThread,
+                                        baseView: WeakReference<out View>)
     : SimpleDisposableSubscriber<T>(baseView) {
 
     private var emitter: ObservableEmitter<Any?>? = null
@@ -21,11 +25,14 @@ open class RetryDisposableSubscriber<T>(baseView: WeakReference<out View>)
     }
 
     fun makeObservableRetryable(observable: Flowable<T>): Flowable<T> =
-            observable.doOnError { onError(it) }
-                    .retryWhen { error ->
+            observable.doOnError {
+                uiExecutor.scheduler.scheduleDirect({
+                    onError(it)
+                })
+            }.retryWhen { error ->
                         error.flatMap {
-                            retryObservable.subscribeOn(Schedulers.io())
-                                    .observeOn(Schedulers.io()).toFlowable(BackpressureStrategy.DROP)
+                            retryObservable.subscribeOn(uiExecutor.scheduler)
+                                    .observeOn(Schedulers.from(threadExecutor)).toFlowable(BackpressureStrategy.DROP)
                         }
                     }
 
@@ -41,7 +48,10 @@ open class RetryDisposableSubscriber<T>(baseView: WeakReference<out View>)
     }
 
     open fun onError(domainException: DomainException, onRetry: () -> Unit, onClose: () -> Unit) {
-        baseView.value?.showRetry(domainException, onRetry, {
+        baseView.value?.showRetry(domainException, {
+            onRetry()
+            baseView.value?.showLoadingDataProgress()
+        }, {
             onClose()
             baseView.value?.close()
         })
