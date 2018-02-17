@@ -2,19 +2,24 @@ package com.halim.hotelstajawal.domain.presenter
 
 import android.support.v4.util.ArrayMap
 import com.halim.hotelstajawal.domain.presenter.bus.Bus
+import com.halim.hotelstajawal.domain.value
 import com.halim.hotelstajawal.domain.view.View
 import java.lang.ref.WeakReference
 
 
 abstract class Presenter<V : View>(val bus: Bus, view: V) {
 
-    val view: WeakReference<V> = WeakReference(view)
+    var view: WeakReference<V> = WeakReference(view)
 
     private val busParams: ArrayMap<Class<*>, Any> = ArrayMap()
 
     init {
         this.registerEvents(bus)
     }
+
+    protected abstract fun registerEvents(bus: Bus)
+
+    abstract fun init()
 
     fun <T> registerReceivingEvent(eventType: Class<T>, action: (t: T) -> Unit) {
         busParams[eventType] = action
@@ -32,7 +37,15 @@ abstract class Presenter<V : View>(val bus: Bus, view: V) {
         }
     }
 
-    protected fun pauseEventsExcept(vararg except: Class<*>) {
+    // called by ViewModel to set the new instance of View (e.g Activity)
+    // TODO store View properties and pass it to new View instance
+    fun updateView(view: V) {
+        if (view != this.view.value) {
+            this.view = WeakReference(view)
+        }
+    }
+
+    private fun pauseEventsExcept(vararg except: Class<*>) {
         bus.unregister(this)
         if (except.isNotEmpty()) {
             for (eventType in except) {
@@ -41,8 +54,6 @@ abstract class Presenter<V : View>(val bus: Bus, view: V) {
             }
         }
     }
-
-    protected abstract fun registerEvents(bus: Bus)
 
     open fun dispose() {}
 }

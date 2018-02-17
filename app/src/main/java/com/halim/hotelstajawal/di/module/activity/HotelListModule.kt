@@ -46,8 +46,11 @@ class HotelListModule {
     // Get the same HotelListViewModel for the activity during configuration change
     @Provides
     @ActivityScope
-    fun provideHotelListPresenter(owner: FragmentActivity, viewModelFactory: ViewModelProvider.Factory): HotelListPresenter =
-            ViewModelProviders.of(owner, viewModelFactory).get(HotelListViewModel::class.java).presenter
+    fun provideHotelListPresenter(owner: FragmentActivity, viewModelFactory: ViewModelProvider.Factory,
+                                  view: HotelListView): HotelListPresenter =
+            ViewModelProviders.of(owner, viewModelFactory).get(HotelListViewModel::class.java).presenter.also {
+                it.updateView(view)
+            }
 
     @Module
     abstract class Bind {

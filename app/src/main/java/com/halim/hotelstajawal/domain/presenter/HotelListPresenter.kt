@@ -23,7 +23,11 @@ class HotelListPresenter(private val listUseCase: ListAllHotelsUseCase,
         }
     }
 
-    fun listAllHotels() {
+    override fun init() {
+        listAllHotels()
+    }
+
+    private fun listAllHotels() {
 
         listUseCase.execute(HotelUseCase.Params.ListAllHotels(),
                 object : RetryDisposableSubscriber<List<Hotel>>(threadExecutor, uiExecutor, view) {
