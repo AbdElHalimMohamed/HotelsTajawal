@@ -17,7 +17,7 @@ class HotelListPresenter(private val listUseCase: ListAllHotelsUseCase,
                          private val uiExecutor: PostExecutionThread,
                          bus: Bus, view: HotelListView) : Presenter<HotelListView>(bus, view) {
 
-    override fun registerEvents(bus: Bus) {
+    override fun registerEvents() {
         registerReceivingEvent(ToHotelDetailsEvent::class.java) {
             view.value?.showHotelDetails(it.hotel)
         }

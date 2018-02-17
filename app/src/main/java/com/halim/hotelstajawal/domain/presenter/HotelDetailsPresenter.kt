@@ -10,7 +10,7 @@ import com.halim.hotelstajawal.domain.view.HotelDetailsView
 class HotelDetailsPresenter(private val hotel: Hotel, bus: Bus, view: HotelDetailsView)
     : Presenter<HotelDetailsView>(bus, view) {
 
-    override fun registerEvents(bus: Bus) {
+    override fun registerEvents() {
         registerReceivingEvent(ShowHotelFullImageEvent::class.java) {
             view.value?.showFullHotelImage(hotel.imageUrl)
         }

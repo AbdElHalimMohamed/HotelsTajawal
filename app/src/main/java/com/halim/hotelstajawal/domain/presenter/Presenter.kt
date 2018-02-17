@@ -14,10 +14,10 @@ abstract class Presenter<V : View>(val bus: Bus, view: V) {
     private val busParams: ArrayMap<Class<*>, Any> = ArrayMap()
 
     init {
-        this.registerEvents(bus)
+        this.registerEvents()
     }
 
-    protected abstract fun registerEvents(bus: Bus)
+    protected abstract fun registerEvents()
 
     abstract fun init()
 

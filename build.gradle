@@ -47,6 +47,8 @@ allprojects {
         dagger_version = '2.11'
 
         glide_version = '4.3.1'
+
+        mock_maker = "mock-maker-inline"
     }
 }
 

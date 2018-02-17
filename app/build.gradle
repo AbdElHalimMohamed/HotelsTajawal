@@ -69,6 +69,53 @@ dependencies {
     kapt "com.github.bumptech.glide:compiler:$glide_version"
 
     testImplementation 'junit:junit:4.12'
+    testImplementation "com.google.dagger:dagger:$dagger_version"
+    kaptTest "com.google.dagger:dagger-android-processor:$dagger_version"
+    kaptTest "com.google.dagger:dagger-compiler:$dagger_version"
+    testImplementation "org.mockito:mockito-core:2.13.0"
+    testImplementation "org.robolectric:robolectric:3.7.1"
+
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 }
+
+//Switch inline (So that Mockito can mock Kotlin classes that they are final buy default)
+// http://hadihariri.com/2016/10/04/Mocking-Kotlin-With-Mockito/
+task createTestResources {
+
+    doLast {
+        def mockMakerFile = new File("$projectDir/src/test/resources/mockito-extensions/org.mockito.plugins.MockMaker")
+        if (mock_maker != null) {
+            logger.warn("! Using MockMaker ${mock_maker}")
+            mockMakerFile.parentFile.mkdirs()
+            mockMakerFile.createNewFile()
+            mockMakerFile.write(mock_maker)
+        } else {
+            logger.warn("! Using default MockMaker")
+        }
+    }
+}
+
+task removeTestResources {
+
+    doLast {
+        def mockMakerFile = new File("$projectDir/src/test/resources/mockito-extensions/org.mockito.plugins.MockMaker")
+
+        if (mockMakerFile.exists()) {
+            mockMakerFile.delete()
+
+            mockMakerFile = mockMakerFile.parentFile
+            while (mockMakerFile.listFiles().size() == 0) {
+                mockMakerFile.delete()
+                mockMakerFile = mockMakerFile.parentFile
+            }
+        }
+    }
+}
+
+task testMock(type: Exec) {
+    commandLine "${rootDir.absolutePath}/gradlew", ':app:test'
+}
+
+testMock.dependsOn createTestResources
+testMock.finalizedBy removeTestResources
